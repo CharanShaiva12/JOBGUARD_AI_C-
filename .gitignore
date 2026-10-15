@@ -1,0 +1,16 @@
+﻿[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.cache
+artifacts/
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.Local.json
+*.pfx
+*.p12
+*.key
+*.log

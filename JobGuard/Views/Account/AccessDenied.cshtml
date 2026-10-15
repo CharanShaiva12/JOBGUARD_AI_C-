@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div style="max-width: 520px; margin: 3rem auto; text-align: center;">
+    <div class="card-panel">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="margin-bottom: 1rem;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+        </svg>
+        <h1 style="font-size: 1.4rem; margin-bottom: 0.5rem;">Access Denied</h1>
+        <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 1.5rem;">
+            You do not have the required permissions or administrative privileges to access this requested resource.
+        </p>
+        <a asp-controller="Home" asp-action="Index" class="btn-primary-action">Return to Homepage</a>
+    </div>
+</div>

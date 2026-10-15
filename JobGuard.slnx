@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="JobGuard.ML.Trainer/JobGuard.ML.Trainer.csproj" />
+  <Project Path="JobGuard.Tests/JobGuard.Tests.csproj" />
+  <Project Path="JobGuard/JobGuard.csproj" />
+</Solution>

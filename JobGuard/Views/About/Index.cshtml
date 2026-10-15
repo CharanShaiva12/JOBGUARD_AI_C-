@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "About JobGuard";
+}
+
+<div style="max-width: 920px; margin: 0 auto;">
+    <div class="card-panel" style="margin-bottom: 2rem;">
+        <div class="card-header-styled">
+            <h1 class="card-title">About JobGuard</h1>
+            <p class="card-subtitle">AI-Assisted Job Advertisement Fraud & Scam Detection System</p>
+        </div>
+
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">1. Purpose and Background</h2>
+            <p style="margin-bottom: 0.75rem;">
+                Online recruitment fraud has surged significantly with remote and hybrid work opportunities. Fraudsters create deceptive job postings to harvest personal data, solicit advance identity verification fees, or involve job seekers in illicit money transfer and package mule schemes.
+            </p>
+            <p>
+                JobGuard was engineered as a practical, AI-driven defense tool to assist candidates in identifying deceptive recruitment characteristics before trusting an offer or sharing sensitive credentials.
+            </p>
+        </section>
+
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">2. Architecture & Machine Learning Pipeline</h2>
+            <p style="margin-bottom: 0.75rem;">
+                JobGuard implements a transparent machine learning classification pipeline utilizing Microsoft ML.NET:
+            </p>
+            <ul style="margin-left: 1.5rem; color: #cbd5e1; font-size: 0.925rem; line-height: 1.8;">
+                <li><strong>Dataset:</strong> The model is trained on the benchmark EMSCAD (Employment Scam Aegean Dataset) containing verified fraudulent and legitimate online recruitment listings.</li>
+                <li><strong>Feature Extraction:</strong> Text descriptions are tokenized and transformed into high-dimensional numerical feature vectors via N-gram Term Frequency-Inverse Document Frequency (TF-IDF).</li>
+                <li><strong>Classification Algorithm:</strong> Binary Logistic Regression with L-BFGS optimization calculates a calibrated fraud risk probability between 0.0 and 1.0.</li>
+                <li><strong>Document OCR:</strong> Direct vector PDF text extraction and Tesseract OCR engine process scanned job advertisements and screenshots.</li>
+            </ul>
+        </section>
+
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">3. Risk Scoring Methodology</h2>
+            <p style="margin-bottom: 0.75rem;">
+                Risk scores range from 0 to 100 and are calculated primarily from the machine learning model's estimated fraud probability, supplemented by transparent security checks:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <div class="stat-box">
+                    <div class="badge-status badge-legitimate" style="margin-bottom: 0.5rem;">0 - 29</div>
+                    <div style="font-weight: 600; color: #f8fafc; font-size: 0.9rem;">Lower Risk</div>
+                    <p style="font-size: 0.8rem; margin-top: 0.25rem;">Standard recruiter phrasing and legitimate profiles.</p>
+                </div>
+                <div class="stat-box">
+                    <div class="badge-status badge-moderate" style="margin-bottom: 0.5rem;">30 - 59</div>
+                    <div style="font-weight: 600; color: #f8fafc; font-size: 0.9rem;">Moderate Risk</div>
+                    <p style="font-size: 0.8rem; margin-top: 0.25rem;">Unusual language, free email domains, or missing company details.</p>
+                </div>
+                <div class="stat-box">
+                    <div class="badge-status badge-fraudulent" style="margin-bottom: 0.5rem;">60 - 79</div>
+                    <div style="font-weight: 600; color: #f8fafc; font-size: 0.9rem;">High Risk</div>
+                    <p style="font-size: 0.8rem; margin-top: 0.25rem;">Strong scam indicators detected by the classifier.</p>
+                </div>
+                <div class="stat-box">
+                    <div class="badge-status badge-fraudulent" style="margin-bottom: 0.5rem; background-color: rgba(220, 38, 38, 0.2);">80 - 100</div>
+                    <div style="font-weight: 600; color: #f8fafc; font-size: 0.9rem;">Very High Risk</div>
+                    <p style="font-size: 0.8rem; margin-top: 0.25rem;">Matches verified scam templates or advance fee demands.</p>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">4. Technology Stack</h2>
+            <table class="table-custom">
+                <tr><td style="color: #64748b; width: 30%;">Platform</td><td>.NET 10.0 / C#</td></tr>
+                <tr><td style="color: #64748b;">Web Framework</td><td>ASP.NET Core MVC</td></tr>
+                <tr><td style="color: #64748b;">Database</td><td>Microsoft SQL Server / LocalDB accessed via parameterized ADO.NET</td></tr>
+                <tr><td style="color: #64748b;">Machine Learning</td><td>Microsoft ML.NET (TF-IDF + L-BFGS Logistic Regression)</td></tr>
+                <tr><td style="color: #64748b;">Document OCR</td><td>Tesseract OCR engine & UglyToad PdfPig</td></tr>
+                <tr><td style="color: #64748b;">Security</td><td>ASP.NET Core Authentication Cookies, PBKDF2-SHA256 Password Hashing, Anti-Forgery Tokens</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">5. System Limitations & Disclaimer</h2>
+            <div style="padding: 1rem; background-color: #0b1322; border-left: 3px solid #38bdf8; border-radius: 4px; font-size: 0.875rem; color: #cbd5e1;">
+                JobGuard is an advisory system designed to assist detection through statistical pattern recognition. No automated classifier can provide a 100% guarantee that an offer is authentic or fraudulent. Users must always verify company registrations through official public registries and verified corporate channels.
+            </div>
+        </section>
+    </div>
+</div>

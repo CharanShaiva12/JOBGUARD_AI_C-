@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<div style="max-width: 860px; margin: 0 auto;">
+    <div class="card-panel">
+        <div class="card-header-styled">
+            <h1 class="card-title">Privacy Policy</h1>
+            <p class="card-subtitle">Last updated: October 2026 &bull; Policy Version 1.0</p>
+        </div>
+
+        <div style="font-size: 0.925rem; color: #cbd5e1; line-height: 1.8;">
+            <h3 style="font-size: 1.15rem; color: #f8fafc; margin: 1.25rem 0 0.5rem 0;">1. Information We Collect</h3>
+            <p>
+                JobGuard collects only the minimum necessary data to provide account authentication and job advertisement fraud analysis:
+            </p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 1rem;">
+                <li><strong>Account Data:</strong> Your name, email address, and a cryptographically salted PBKDF2 hash of your password. We never store plain text passwords.</li>
+                <li><strong>Submitted Job Analysis Content:</strong> Company names, job URLs, job description text, or OCR-extracted text submitted during analysis.</li>
+                <li><strong>Analysis Output:</strong> Computed risk scores, model predictions, and detection timestamps associated with your user account in our SQL Server database.</li>
+            </ul>
+
+            <h3 style="font-size: 1.15rem; color: #f8fafc; margin: 1.25rem 0 0.5rem 0;">2. How Your Data Is Used</h3>
+            <p>
+                Data is processed strictly to:
+            </p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 1rem;">
+                <li>Authenticate your identity when you access the platform.</li>
+                <li>Execute real-time text classification and risk scoring via local ML.NET inference.</li>
+                <li>Maintain your personal historical analysis dashboard for future reference.</li>
+                <li>Display aggregated administrative platform statistics to authorized administrators.</li>
+            </ul>
+
+            <h3 style="font-size: 1.15rem; color: #f8fafc; margin: 1.25rem 0 0.5rem 0;">3. Data Storage & Security</h3>
+            <p>
+                All data is stored in Microsoft SQL Server using parameterized ADO.NET queries to prevent SQL injection. Uploaded files for OCR are processed in memory and temporary streams are immediately released. No uploaded files are published in publicly accessible directories.
+            </p>
+
+            <h3 style="font-size: 1.15rem; color: #f8fafc; margin: 1.25rem 0 0.5rem 0;">4. Cookies and Tracking</h3>
+            <p>
+                We use secure, essential HTTP cookies for session authentication (<code>JobGuard.AuthToken</code>) and anti-forgery protection. We do not employ third-party advertising tracking or marketing trackers. You can adjust your cookie settings at any time using our Cookie Settings panel.
+            </p>
+
+            <h3 style="font-size: 1.15rem; color: #f8fafc; margin: 1.25rem 0 0.5rem 0;">5. Data Retention & User Rights</h3>
+            <p>
+                Users have the right to inspect their stored evaluations in the dashboard. If you wish to delete your account or stored analyses, contact the system administrator.
+            </p>
+        </div>
+    </div>
+</div>

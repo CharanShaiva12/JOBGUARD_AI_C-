@@ -1,0 +1,157 @@
+@model JobGuard.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "System Administration Dashboard";
+}
+
+<div style="max-width: 1140px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h1 style="font-size: 1.6rem;">Administration Console</h1>
+                <span class="nav-role-badge">ADMINISTRATOR</span>
+            </div>
+            <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                Live database metrics aggregated directly from Microsoft SQL Server via ADO.NET.
+            </p>
+        </div>
+    </div>
+
+    <!-- Administrative Metrics Grid -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Registered Users</div>
+            <div class="stat-value">@Model.TotalUsers</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Total Analyses</div>
+            <div class="stat-value">@Model.TotalAnalyses</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Legitimate Predictions</div>
+            <div class="stat-value" style="color: var(--status-low-risk);">@Model.LegitimateCount</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Fraudulent Flagged</div>
+            <div class="stat-value" style="color: var(--status-high-risk);">@Model.FraudulentCount</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Average Risk Score</div>
+            <div class="stat-value">@Model.AvgRiskScore <span style="font-size: 0.9rem; font-weight: 400; color: #64748b;">/ 100</span></div>
+        </div>
+    </div>
+
+    <!-- Recent Analyses Section -->
+    <div class="card-panel" style="margin-bottom: 2rem;">
+        <div class="card-header-styled">
+            <h2 class="card-title">Recent System Job Analyses</h2>
+            <p class="card-subtitle">Real records across all accounts evaluated by the system.</p>
+        </div>
+
+        @if (!Model.RecentAnalyses.Any())
+        {
+            <div class="empty-state-box">
+                <h3 class="empty-state-title">No analyses recorded in database</h3>
+                <p class="empty-state-desc">When users submit jobs for inspection, live records will be listed here.</p>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x: auto;">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User Email</th>
+                            <th>Company</th>
+                            <th>Prediction</th>
+                            <th>Risk Score</th>
+                            <th>Category</th>
+                            <th>Model</th>
+                            <th>Timestamp (UTC)</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RecentAnalyses)
+                        {
+                            string badgeClass = item.Prediction == "Legitimate" ? "badge-legitimate" : "badge-fraudulent";
+                            <tr>
+                                <td>#@item.AnalysisId</td>
+                                <td>@(item.UserEmail ?? "User #" + item.UserId)</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.CompanyName) ? "N/A" : item.CompanyName)</td>
+                                <td><span class="badge-status @badgeClass">@item.Prediction</span></td>
+                                <td><strong>@item.RiskScore</strong></td>
+                                <td>@item.RiskCategory</td>
+                                <td><code style="font-size: 0.75rem; color: #38bdf8;">@item.ModelVersion</code></td>
+                                <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td style="text-align: right;">
+                                    <a asp-controller="Analysis" asp-action="Result" asp-route-id="@item.AnalysisId" class="btn-secondary-action btn-sm-custom">
+                                        Inspect
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- Registered Users Section -->
+    <div class="card-panel">
+        <div class="card-header-styled">
+            <h2 class="card-title">Registered Accounts</h2>
+            <p class="card-subtitle">User accounts registered in SQL Server (Users table).</p>
+        </div>
+
+        @if (!Model.RecentUsers.Any())
+        {
+            <div class="empty-state-box">
+                <h3 class="empty-state-title">No users registered</h3>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x: auto;">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Active Status</th>
+                            <th>Registered (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.RecentUsers)
+                        {
+                            <tr>
+                                <td>#@user.UserId</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @if (user.Role == "Admin")
+                                    {
+                                        <span class="nav-role-badge">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #94a3b8;">User</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span style="color: @(user.IsActive ? "var(--status-low-risk)" : "var(--status-high-risk)");">
+                                        @(user.IsActive ? "Active" : "Disabled")
+                                    </span>
+                                </td>
+                                <td>@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

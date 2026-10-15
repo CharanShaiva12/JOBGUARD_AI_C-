@@ -1,0 +1,60 @@
+@model JobGuard.ViewModels.JobAnalysisInputViewModel
+@{
+    ViewData["Title"] = "Direct Job Analysis";
+}
+
+<div style="max-width: 880px; margin: 0 auto;">
+    <div class="card-panel">
+        <div class="card-header-styled">
+            <h1 class="card-title">Direct Job Analysis</h1>
+            <p class="card-subtitle">
+                Enter job listing information or upload an advertisement image/PDF to compute risk probabilities.
+            </p>
+        </div>
+
+        <form asp-controller="Analysis" asp-action="Index" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert-box alert-danger-custom"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label asp-for="CompanyName" class="form-label"></label>
+                    <input asp-for="CompanyName" class="form-control-custom" placeholder="e.g. Acme Technologies Ltd." />
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="JobUrl" class="form-label"></label>
+                    <input asp-for="JobUrl" class="form-control-custom" placeholder="https://careers.example.com/posting/123" />
+                    <span asp-validation-for="JobUrl" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- OCR Upload -->
+            <div class="form-group" style="background-color: #0b1322; padding: 1.25rem; border-radius: 6px; border: 1px dashed var(--border-subtle);">
+                <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span>Document OCR & Text Extraction (PDF or Image)</span>
+                    <span style="font-size: 0.75rem; color: #64748b;">Supports .pdf, .png, .jpg up to 10MB</span>
+                </label>
+                <input asp-for="UploadedFile" type="file" id="fileUploadInput" class="form-control-custom" accept=".pdf,image/png,image/jpeg" />
+                <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                <div id="ocrStatusBox" style="display: none; margin-top: 0.75rem;"></div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="JobDescription" class="form-label"></label>
+                <textarea asp-for="JobDescription" id="jobDescriptionTextarea" class="form-control-custom" rows="9" placeholder="Paste full job description text here..."></textarea>
+                <span asp-validation-for="JobDescription" class="text-danger"></span>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="submit" class="btn-primary-action">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Run Fraud Analysis</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

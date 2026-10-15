@@ -1,0 +1,86 @@
+@model JobGuard.ViewModels.JobAnalysisInputViewModel
+@{
+    ViewData["Title"] = "AI Job Fraud Detection";
+    var pendingCompany = TempData["PendingCompanyName"] as string;
+    var pendingUrl = TempData["PendingJobUrl"] as string;
+    var pendingDesc = TempData["PendingJobDescription"] as string;
+    var authNotice = TempData["AuthRequiredMessage"] as string;
+
+    if (!string.IsNullOrEmpty(pendingCompany)) Model.CompanyName = pendingCompany;
+    if (!string.IsNullOrEmpty(pendingUrl)) Model.JobUrl = pendingUrl;
+    if (!string.IsNullOrEmpty(pendingDesc)) Model.JobDescription = pendingDesc;
+}
+
+<div style="max-width: 860px; margin: 0 auto;">
+    @if (!string.IsNullOrEmpty(authNotice))
+    {
+        <div class="alert-box alert-info-custom">
+            @authNotice
+        </div>
+    }
+
+    <div class="card-panel">
+        <div class="card-header-styled">
+            <h1 class="card-title">Analyse Job Advertisement</h1>
+            <p class="card-subtitle">
+                Inspect recruitment listings, offer letters, or employment ads for fraud indicators using trained ML text classification and security heuristics.
+            </p>
+        </div>
+
+        <form asp-controller="Home" asp-action="Analyze" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert-box alert-danger-custom" style="display: @(ViewData.ModelState.IsValid ? "none" : "block");"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label asp-for="CompanyName" class="form-label"></label>
+                    <input asp-for="CompanyName" class="form-control-custom" placeholder="e.g. Acme Technologies Ltd." />
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="JobUrl" class="form-label"></label>
+                    <input asp-for="JobUrl" class="form-control-custom" placeholder="https://careers.example.com/posting/123" />
+                    <span asp-validation-for="JobUrl" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- OCR & Document Text Extraction Box -->
+            <div class="form-group" style="background-color: var(--bg-card-subtle); padding: 1.25rem; border-radius: 6px; border: 1px dashed var(--border-medium);">
+                <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span>Document OCR & Text Extraction (PDF or Image)</span>
+                    <span style="font-size: 0.775rem; color: var(--text-muted);">Supports .pdf, .png, .jpg, .jpeg up to 10MB</span>
+                </label>
+                <input asp-for="UploadedFile" type="file" id="fileUploadInput" class="form-control-custom" accept=".pdf,image/png,image/jpeg" />
+                <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                <div id="ocrStatusBox" style="display: none; margin-top: 0.75rem;"></div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="JobDescription" class="form-label"></label>
+                <textarea asp-for="JobDescription" id="jobDescriptionTextarea" class="form-control-custom" rows="9" placeholder="Paste full job description text here, or let document upload populate it automatically..."></textarea>
+                <span asp-validation-for="JobDescription" class="text-danger"></span>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.75rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span>Signed in as <strong>@User.Identity.Name</strong>. Results are archived to your personal dashboard.</span>
+                    }
+                    else
+                    {
+                        <span>Visitors can draft details freely. Account sign-in is requested upon analysis.</span>
+                    }
+                </div>
+
+                <button type="submit" class="btn-primary-action">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Analyse Job</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

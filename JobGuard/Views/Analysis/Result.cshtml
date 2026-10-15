@@ -1,0 +1,150 @@
+@model JobGuard.ViewModels.AnalysisResultViewModel
+@{
+    ViewData["Title"] = "Analysis Result";
+    string badgeClass = Model.Prediction == "Legitimate" ? "badge-legitimate" : "badge-fraudulent";
+    string circleClass = Model.RiskScore < 30 ? "risk-circle-low" : (Model.RiskScore < 60 ? "risk-circle-mod" : "risk-circle-high");
+}
+
+<div style="max-width: 920px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <div>
+            <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Analysis Report #@Model.AnalysisId</h1>
+            <p style="font-size: 0.85rem; color: #64748b;">
+                Generated on @Model.CreatedAt.ToLocalTime().ToString("f") &bull; Model: @Model.ModelVersion
+            </p>
+        </div>
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="btn-secondary-action btn-sm-custom">&larr; New Analysis</a>
+            <a asp-controller="Dashboard" asp-action="Index" class="btn-primary-action btn-sm-custom">Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Main Risk Overview Card -->
+    <div class="card-panel" style="margin-bottom: 1.5rem;">
+        <div class="risk-meter-container">
+            <div class="risk-score-circle @circleClass">
+                <span class="risk-number">@Model.RiskScore</span>
+                <span class="risk-scale">/ 100</span>
+            </div>
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                    <span class="badge-status @badgeClass">@Model.Prediction</span>
+                    <span style="font-size: 0.95rem; font-weight: 600; color: #e2e8f0;">@Model.RiskCategory</span>
+                </div>
+                <p style="font-size: 0.925rem; color: #cbd5e1; margin-bottom: 0.75rem;">
+                    @Model.Summary
+                </p>
+                <div style="font-size: 0.85rem; color: #94a3b8; background-color: rgba(255,255,255,0.03); padding: 0.5rem 0.75rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+                    <strong>Action Advisory:</strong> @Model.Recommendation
+                </div>
+            </div>
+        </div>
+
+        <!-- Suspicious Markers Breakdown -->
+        <h3 style="font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem;">Identified Risk Indicators</h3>
+        @if (Model.SuspiciousFlags.Any())
+        {
+            <ul class="indicator-list">
+                @foreach (var flag in Model.SuspiciousFlags)
+                {
+                    <li class="indicator-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span>@flag</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div style="padding: 1rem; background-color: #0d1527; border-radius: 4px; border-left: 3px solid #10b981; font-size: 0.875rem; color: #cbd5e1;">
+                No obvious heuristic high-risk markers (upfront payment demands, unverified messenger channels) were detected in the description.
+            </div>
+        }
+    </div>
+
+    <!-- Metadata & Details -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div class="card-panel">
+            <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Job Meta Information</h3>
+            <table class="table-custom">
+                <tr>
+                    <td style="color: #64748b; width: 40%;">Company Name</td>
+                    <td>@(string.IsNullOrWhiteSpace(Model.CompanyName) ? "Not Specified" : Model.CompanyName)</td>
+                </tr>
+                <tr>
+                    <td style="color: #64748b;">Job URL</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(Model.JobUrl))
+                        {
+                            <span style="word-break: break-all; font-size: 0.825rem;">@Model.JobUrl</span>
+                        }
+                        else
+                        {
+                            <span>None Provided</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: #64748b;">ML Fraud Probability</td>
+                    <td>@((Model.Confidence * 100).ToString("F1"))%</td>
+                </tr>
+                <tr>
+                    <td style="color: #64748b;">Transport Security</td>
+                    <td>@(Model.UsesHttps ? "HTTPS Verified" : (string.IsNullOrWhiteSpace(Model.JobUrl) ? "N/A" : "Unencrypted HTTP"))</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card-panel">
+            <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Model & System Integrity</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.75rem;">
+                This prediction was generated deterministically by the JobGuard ML.NET model loaded in memory. The score reflects statistical patterns found in the EMSCAD recruitment fraud dataset.
+            </p>
+            <div style="padding: 0.75rem; background-color: #0b1322; border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 0.775rem; color: #64748b;">
+                <strong>Limitation Notice:</strong> Automated AI classifiers cannot guarantee absolute authenticity. Always verify corporate registration and direct company contact channels.
+            </div>
+        </div>
+    </div>
+
+    <!-- Submitted Job Text Preview -->
+    <div class="card-panel" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Analysed Description Text</h3>
+        <div style="max-height: 240px; overflow-y: auto; background-color: #0b1322; padding: 1rem; border-radius: 4px; border: 1px solid var(--border-subtle); font-size: 0.85rem; color: #cbd5e1; white-space: pre-wrap;">
+@Model.JobDescription
+        </div>
+    </div>
+
+    <!-- User Feedback Form -->
+    <div class="card-panel">
+        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Accuracy Feedback</h3>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem;">
+            Was this risk assessment accurate based on your knowledge? Feedback helps audit future model versions.
+        </p>
+
+        @if (TempData["FeedbackSuccess"] != null)
+        {
+            <div class="alert-box alert-success-custom">
+                @TempData["FeedbackSuccess"]
+            </div>
+        }
+        else
+        {
+            <form asp-controller="Analysis" asp-action="Feedback" method="post">
+                <input type="hidden" name="analysisId" value="@Model.AnalysisId" />
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <select name="feedbackType" class="form-control-custom" style="width: auto;">
+                        <option value="Accurate">Result appears accurate</option>
+                        <option value="FalsePositive">False positive (Legitimate job flagged high risk)</option>
+                        <option value="FalseNegative">False negative (Fraudulent job flagged low risk)</option>
+                    </select>
+                    <input type="text" name="feedbackText" class="form-control-custom" placeholder="Optional comments..." style="flex: 1;" />
+                    <button type="submit" class="btn-secondary-action btn-sm-custom">Submit Feedback</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>

@@ -1,0 +1,124 @@
+@model JobGuard.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "User Dashboard";
+}
+
+<div style="max-width: 1080px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem;">
+        <div>
+            <h1 style="font-size: 1.6rem; margin-bottom: 0.25rem;">My Analysis Dashboard</h1>
+            <p style="font-size: 0.875rem; color: #64748b;">
+                Summary of your historical job advertisement security evaluations.
+            </p>
+        </div>
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="btn-primary-action btn-sm-custom">
+                + Analyse New Job
+            </a>
+        </div>
+    </div>
+
+    <!-- Verified Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Total Jobs Analysed</div>
+            <div class="stat-value">@Model.TotalAnalyzed</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Predicted Legitimate</div>
+            <div class="stat-value" style="color: var(--status-low-risk);">@Model.LowerRiskCount</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Predicted Fraudulent</div>
+            <div class="stat-value" style="color: var(--status-high-risk);">@Model.FraudulentRiskCount</div>
+        </div>
+    </div>
+
+    <!-- Recent Analyses Table -->
+    <div class="card-panel">
+        <div class="card-header-styled" style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h2 class="card-title">Analysis History</h2>
+                <p class="card-subtitle">Stored evaluations associated with your account in SQL Server.</p>
+            </div>
+            <span style="font-size: 0.8rem; color: #64748b;">Total: @Model.RecentAnalyses.Count</span>
+        </div>
+
+        @if (!Model.RecentAnalyses.Any())
+        {
+            <div class="empty-state-box">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5" style="margin-bottom: 1rem;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h3 class="empty-state-title">No job analyses found yet</h3>
+                <p class="empty-state-desc">
+                    You have not analysed any job advertisements yet. Paste a job description or upload an ad file to evaluate its fraud probability.
+                </p>
+                <a asp-controller="Home" asp-action="Index" class="btn-primary-action">
+                    Analyse Your First Job
+                </a>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x: auto;">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Company</th>
+                            <th>Prediction</th>
+                            <th>Risk Score</th>
+                            <th>Risk Category</th>
+                            <th>Date (UTC)</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RecentAnalyses)
+                        {
+                            string badgeClass = item.Prediction == "Legitimate" ? "badge-legitimate" : "badge-fraudulent";
+                            <tr>
+                                <td>#@item.AnalysisId</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.CompanyName) ? "Unnamed Posting" : item.CompanyName)</td>
+                                <td>
+                                    <span class="badge-status @badgeClass">@item.Prediction</span>
+                                </td>
+                                <td>
+                                    <strong>@item.RiskScore</strong> / 100
+                                </td>
+                                <td>@item.RiskCategory</td>
+                                <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td style="text-align: right;">
+                                    <a asp-controller="Analysis" asp-action="Result" asp-route-id="@item.AnalysisId" class="btn-secondary-action btn-sm-custom">
+                                        View Report
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+
+    <section class="theme-settings card-panel" aria-labelledby="themeSettingsTitle">
+        <div class="card-header-styled">
+            <h2 class="card-title" id="themeSettingsTitle">Appearance & Themes</h2>
+            <p class="card-subtitle">Choose a colour theme. Your selection applies across JobGuard pages on this browser.</p>
+        </div>
+        <div class="theme-options" role="group" aria-label="Choose website theme">
+            <button type="button" class="theme-option" data-theme-choice="light"><span class="theme-swatch swatch-light"></span><span>Classic Light</span><small>White</small></button>
+            <button type="button" class="theme-option" data-theme-choice="dark"><span class="theme-swatch swatch-dark"></span><span>Midnight</span><small>Dark</small></button>
+            <button type="button" class="theme-option" data-theme-choice="ocean"><span class="theme-swatch swatch-ocean"></span><span>Ocean</span><small>Blue</small></button>
+            <button type="button" class="theme-option" data-theme-choice="emerald"><span class="theme-swatch swatch-emerald"></span><span>Emerald</span><small>Green</small></button>
+            <button type="button" class="theme-option" data-theme-choice="sunset"><span class="theme-swatch swatch-sunset"></span><span>Sunset</span><small>Warm</small></button>
+            <button type="button" class="theme-option" data-theme-choice="rose"><span class="theme-swatch swatch-rose"></span><span>Rose</span><small>Berry</small></button>
+            <button type="button" class="theme-option" data-theme-choice="contrast"><span class="theme-swatch swatch-contrast"></span><span>High Contrast</span><small>Accessible</small></button>
+        </div>
+        <p class="theme-saved-message" id="themeSavedMessage" aria-live="polite">Theme preference is saved on this browser.</p>
+    </section>
+</div>
